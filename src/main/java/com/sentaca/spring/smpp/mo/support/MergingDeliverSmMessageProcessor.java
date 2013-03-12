@@ -51,6 +51,9 @@ public abstract class MergingDeliverSmMessageProcessor extends DeliverSmMessageP
     // TODO refactor it as it looks like shit :)
     MOMessage inboundMessageToUse = inboundMessage;
 
+    // TODO use DeliverSmSarProperties ...
+    // DeliverSmSarProperties sarProperties = new
+    // DeliverSmSarProperties(deliverSm);
     // check if this is part of multipart message
     short msgRefNo = 0;
     byte msgMaxNum = 0;
