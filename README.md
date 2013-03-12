@@ -3,9 +3,9 @@ spring-smpp
 
 Spring wrapper on top of smslib and JSMPP libraries.
 
-Work in progress, see (minimal.xml)[src/test/resources/minimal.xml]
+Work in progress...
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:util="http://www.springframework.org/schema/util" 
