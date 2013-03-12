@@ -24,7 +24,7 @@ Work in progress, see (minimal.xml)[src/test/resources/minimal.xml]
             <bean class="com.sentaca.spring.smpp.BindConfiguration">
               <property name="systemId" value="smppclient1" />
               <property name="password" value="password" />
-              <property name="host" value="midleton.sentaca.com" />
+              <property name="host" value="xxx.sentaca.com" />
               <property name="port" value="2775" />
               <property name="sourceTON" value="0" />
               <property name="sourceNPI" value="1" />
