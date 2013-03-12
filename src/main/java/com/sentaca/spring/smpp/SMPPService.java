@@ -8,9 +8,9 @@ import org.smslib.GatewayException;
 import org.smslib.OutboundMessage;
 import org.smslib.Service;
 import org.smslib.TimeoutException;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.sentaca.spring.smpp.jsmpp.JSMPPGateway;
 import com.sentaca.spring.smpp.monitoring.LoggingSMPPMonitoringAgent;
@@ -44,21 +44,16 @@ public class SMPPService implements InitializingBean, DisposableBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     if (autoStart || forceStart) {
-      if (gatewaysConfigurations == null || gatewaysConfigurations.isEmpty()) {
-        throw new BeanInitializationException("Gateways must not be empty.");
-      }
+      Assert.notEmpty(gatewaysConfigurations, "Gateways must not be empty.");
+      Assert.notNull(smppMonitoringAgent, "smppMonitoringAgent must not be null, use default LoggingSMPPMonitoringAgent or NoopSMPPMonitoringAgent.");
+      Assert.notNull(outboundMessageCreator, "outboundMessageCreator must not be null, use DefaultOutboundMessageCreator or your own implementatin.");
 
-      if (smppMonitoringAgent == null) {
-        throw new BeanInitializationException("smppMonitoringAgent must not be null, use default LoggingSMPPMonitoringAgent or NoopSMPPMonitoringAgent.");
-      }
-      if (outboundMessageCreator == null) {
-        throw new BeanInitializationException("outboundMessageCreator must not be null, use DefaultOutboundMessageCreator or your own implementatin.");
-      }
-
+      // add gateways
       for (SMSCGatewayConfiguration configuration : gatewaysConfigurations) {
         Service.getInstance().addGateway(new JSMPPGateway(configuration.getSmscConfig(), configuration.getMessageReceiver(), smppMonitoringAgent));
       }
 
+      // and fire-it-up
       Service.getInstance().startService();
     }
 
@@ -97,6 +92,10 @@ public class SMPPService implements InitializingBean, DisposableBean {
 
   public void setOutboundMessageCreator(OutboundMessageCreator outboundMessageCreator) {
     this.outboundMessageCreator = outboundMessageCreator;
+  }
+
+  public void setSmppMonitoringAgent(SMPPMonitoringAgent smppMonitoringAgent) {
+    this.smppMonitoringAgent = smppMonitoringAgent;
   }
 
   public void start() throws Exception {

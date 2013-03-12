@@ -1,5 +1,8 @@
 package com.sentaca.spring.smpp.mt;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class MTMessage {
 
   private String originatingAddress;
@@ -38,6 +41,11 @@ public class MTMessage {
 
   public void setOriginatingAddress(String originatingAddress) {
     this.originatingAddress = originatingAddress;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 
 }
