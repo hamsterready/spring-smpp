@@ -18,9 +18,10 @@ public interface SMPPMonitoringAgent {
    * This method should not throw exceptions as they are not handled properly:
    * http://bit.ly/YVQiua
    * 
+   * @param gatewayId 
    * @param e
    */
-  void onGatewayStartupError(Exception e);
+  void onGatewayStartupError(String gatewayId, Exception e);
 
   /**
    * Invoked after successful connection, BIND and ENQUIRE LINK timer setup.

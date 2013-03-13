@@ -17,7 +17,7 @@ public class LoggingSMPPMonitoringAgent implements SMPPMonitoringAgent {
   }
 
   @Override
-  public void onGatewayStartupError(Exception e) {
+  public void onGatewayStartupError(String gatewayId, Exception e) {
     logger.error(e.getMessage(), e);
   }
 

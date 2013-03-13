@@ -7,7 +7,7 @@ import com.sentaca.spring.smpp.mt.MTMessage;
 public class NoopSMPPMonitoringAgent implements SMPPMonitoringAgent {
 
   @Override
-  public void onGatewayStartupError(Exception e) {
+  public void onGatewayStartupError(String gatewayId, Exception e) {
   }
 
   @Override

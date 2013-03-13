@@ -87,7 +87,7 @@ public class JSMPPGateway extends AbstractSMPPGateway {
 
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            smppMonitoringAgent.onGatewayStartupError(e);
+            smppMonitoringAgent.onGatewayStartupError(JSMPPGateway.this.getGatewayId(), e);
           }
         }
       } else if (newState.equals(SessionState.CLOSED) || newState.equals(SessionState.UNBOUND)) {
