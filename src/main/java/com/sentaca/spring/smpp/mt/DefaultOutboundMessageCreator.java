@@ -31,6 +31,7 @@ public class DefaultOutboundMessageCreator implements OutboundMessageCreator {
 
     sms.setEncoding(encoding.getSmslibEncodings());
     sms.setFrom(message.getOriginatingAddress());
+    sms.setValidityPeriod(message.getValidityPeriodInHours());
 
     return sms;
 

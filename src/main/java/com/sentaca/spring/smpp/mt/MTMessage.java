@@ -8,6 +8,7 @@ public class MTMessage {
   private String originatingAddress;
   private String destinationAddress;
   private String content;
+  private int validityPeriodInHours = -1;
 
   public MTMessage() {
     // -- default
@@ -31,6 +32,10 @@ public class MTMessage {
     return originatingAddress;
   }
 
+  public int getValidityPeriodInHours() {
+    return validityPeriodInHours;
+  }
+
   public void setContent(String content) {
     this.content = content;
   }
@@ -41,6 +46,10 @@ public class MTMessage {
 
   public void setOriginatingAddress(String originatingAddress) {
     this.originatingAddress = originatingAddress;
+  }
+
+  public void setValidityPeriodInHours(int validityPeriodInHours) {
+    this.validityPeriodInHours = validityPeriodInHours;
   }
 
   @Override
