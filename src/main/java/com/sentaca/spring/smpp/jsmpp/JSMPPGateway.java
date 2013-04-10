@@ -24,10 +24,12 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsmpp.InvalidResponseException;
 import org.jsmpp.PDUException;
+import org.jsmpp.SMPPConstant;
 import org.jsmpp.bean.Alphabet;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.ESMClass;
@@ -113,19 +115,22 @@ public class JSMPPGateway extends AbstractSMPPGateway {
 
   private final BindConfiguration smscConfig;
   private SMPPMonitoringAgent smppMonitoringAgent;
+  private boolean useUdhi;
 
   /**
    * 
    * @param smscConfig
    * @param messageReceiver
    * @param smppMonitoringAgent
+   * @param useUdhi 
    */
-  public JSMPPGateway(BindConfiguration smscConfig, MessageReceiver messageReceiver, SMPPMonitoringAgent smppMonitoringAgent) {
+  public JSMPPGateway(BindConfiguration smscConfig, MessageReceiver messageReceiver, SMPPMonitoringAgent smppMonitoringAgent, boolean useUdhi) {
     super(smscConfig.getHost() + ":" + smscConfig.getPort() + ":" + smscConfig.getSystemId(), smscConfig.getHost(), smscConfig.getPort(), new BindAttributes(
         smscConfig.getSystemId(), smscConfig.getPassword(), smscConfig.getSystemType(), org.smslib.smpp.BindAttributes.BindType.TRANSCEIVER));
     this.smscConfig = smscConfig;
     this.messageReceiver = messageReceiver;
     this.smppMonitoringAgent = smppMonitoringAgent;
+    this.useUdhi = useUdhi;
     messageReceiver.init(this);
     setAttributes(AGateway.GatewayAttributes.SEND | AGateway.GatewayAttributes.CUSTOMFROM | AGateway.GatewayAttributes.BIGMESSAGES
         | AGateway.GatewayAttributes.FLASHSMS | AGateway.GatewayAttributes.RECEIVE);
@@ -270,27 +275,24 @@ public class JSMPPGateway extends AbstractSMPPGateway {
     registeredDelivery.setSMSCDeliveryReceipt((msg.getStatusReport()) ? SMSCDeliveryReceipt.SUCCESS_FAILURE : SMSCDeliveryReceipt.DEFAULT);
 
     boolean returnValue = true;
-    // TODO FIXME - support for UDHI messages
-    // if (msg.getFrom().equals(sth)) {
-    // int dataLength = 134; // 140 - 6 (messahe length - udh length)
-    // int parts = (int) Math.ceil(binaryContent.length / (double) dataLength);
-    // byte referenceNumber = (byte) (Math.random() * 0xFF);
-    // for (int i = 0; i < parts; i++) {
-    // byte[] binaryContentPart = ArrayUtils.subarray(binaryContent, i *
-    // dataLength, Math.min(binaryContent.length, (i + 1) * dataLength));
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 0, (byte) 0x05);
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 1, (byte) 0x00);
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 2, (byte) 0x03);
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 3,
-    // referenceNumber);
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 4, (byte) parts);
-    // binaryContentPart = ArrayUtils.add(binaryContentPart, 5, (byte) (i + 1));
-    // returnValue = submitShortMessage(msg, dataCoding, registeredDelivery,
-    // binaryContentPart, new ESMClass(SMPPConstant.ESMCLS_UDHI_INDICATOR_SET));
-    // }
-    // } else {
-    returnValue = submitShortMessage(msg, dataCoding, registeredDelivery, binaryContent, new ESMClass());
-    // }
+    // TODO support for UDHI messages
+    if (useUdhi) {
+      int dataLength = 134; // 140 - 6 (messahe length - udh length)
+      int parts = (int) Math.ceil(binaryContent.length / (double) dataLength);
+      byte referenceNumber = (byte) (Math.random() * 0xFF);
+      for (int i = 0; i < parts; i++) {
+        byte[] binaryContentPart = ArrayUtils.subarray(binaryContent, i * dataLength, Math.min(binaryContent.length, (i + 1) * dataLength));
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 0, (byte) 0x05);
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 1, (byte) 0x00);
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 2, (byte) 0x03);
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 3, referenceNumber);
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 4, (byte) parts);
+        binaryContentPart = ArrayUtils.add(binaryContentPart, 5, (byte) (i + 1));
+        returnValue = submitShortMessage(msg, dataCoding, registeredDelivery, binaryContentPart, new ESMClass(SMPPConstant.ESMCLS_UDHI_INDICATOR_SET));
+      }
+    } else {
+      returnValue = submitShortMessage(msg, dataCoding, registeredDelivery, binaryContent, new ESMClass());
+    }
 
     return returnValue;
   }

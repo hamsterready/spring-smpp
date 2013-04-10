@@ -3,7 +3,6 @@ package com.sentaca.spring.smpp;
 import com.sentaca.spring.smpp.jsmpp.JSMPPGateway;
 import com.sentaca.spring.smpp.mo.MessageReceiver;
 
-
 /**
  * Composition of {@link BindConfiguration} and {@link MessageReceiver}. Used by
  * {@link SMPPService} for deferred {@link JSMPPGateway} initialization (as
@@ -19,6 +18,8 @@ public class SMSCGatewayConfiguration {
 
   private final MessageReceiver messageReceiver;
 
+  private boolean useUdhiInSubmitSm = false;
+
   public SMSCGatewayConfiguration(BindConfiguration smscConfig, MessageReceiver messageReceiver) {
     this.smscConfig = smscConfig;
     this.messageReceiver = messageReceiver;
@@ -30,5 +31,13 @@ public class SMSCGatewayConfiguration {
 
   public BindConfiguration getSmscConfig() {
     return smscConfig;
+  }
+
+  public boolean isUseUdhiInSubmitSm() {
+    return useUdhiInSubmitSm;
+  }
+
+  public void setUseUdhiInSubmitSm(boolean useUdhiInSubmitSm) {
+    this.useUdhiInSubmitSm = useUdhiInSubmitSm;
   }
 }

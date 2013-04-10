@@ -50,7 +50,8 @@ public class SMPPService implements InitializingBean, DisposableBean {
 
       // add gateways
       for (SMSCGatewayConfiguration configuration : gatewaysConfigurations) {
-        Service.getInstance().addGateway(new JSMPPGateway(configuration.getSmscConfig(), configuration.getMessageReceiver(), smppMonitoringAgent));
+        Service.getInstance().addGateway(
+            new JSMPPGateway(configuration.getSmscConfig(), configuration.getMessageReceiver(), smppMonitoringAgent, configuration.isUseUdhiInSubmitSm()));
       }
 
       // and fire-it-up
