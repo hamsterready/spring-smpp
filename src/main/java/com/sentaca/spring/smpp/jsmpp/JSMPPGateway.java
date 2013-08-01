@@ -211,7 +211,7 @@ public class JSMPPGateway extends AbstractSMPPGateway {
       logger.trace("#initSession with " + stateListener + " and " + messageReceiver + ".");
     }
 
-    session = new SMPPSession();
+    session = new SMPPSession(smscConfig);
     session.setPduProcessorDegree(PDU_PROCESSOR_DEGREE);
     session.setTransactionTimer(TRANSACTION_TIMER);
 

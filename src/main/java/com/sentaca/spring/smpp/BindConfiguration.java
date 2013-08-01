@@ -29,6 +29,9 @@ public class BindConfiguration {
    * 
    */
   private String serviceType;
+  
+  private String localHost;
+  private int localPort = 0;
 
   public Address getDestinationAddress() {
     if (null != this.getDestinationTON() && null != this.getDestinationNPI()) {
@@ -49,6 +52,14 @@ public class BindConfiguration {
 
   public String getHost() {
     return host;
+  }
+
+  public String getLocalHost() {
+    return localHost;
+  }
+
+  public int getLocalPort() {
+    return localPort;
   }
 
   public String getPassword() {
@@ -98,6 +109,14 @@ public class BindConfiguration {
 
   public void setHost(String host) {
     this.host = host;
+  }
+
+  public void setLocalHost(String localHost) {
+    this.localHost = localHost;
+  }
+
+  public void setLocalPort(int localPort) {
+    this.localPort = localPort;
   }
 
   public void setPassword(String password) {

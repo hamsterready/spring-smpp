@@ -17,6 +17,8 @@ package com.sentaca.spring.smpp.jsmpp;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,11 +77,13 @@ import org.jsmpp.session.SubmitMultiCommandTask;
 import org.jsmpp.session.SubmitSmCommandTask;
 import org.jsmpp.session.connection.Connection;
 import org.jsmpp.session.connection.ConnectionFactory;
+import org.jsmpp.session.connection.socket.SocketConnection;
 import org.jsmpp.session.connection.socket.SocketConnectionFactory;
 import org.jsmpp.util.DefaultComposer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sentaca.spring.smpp.BindConfiguration;
 
 /**
  * This is an object that used to communicate with SMPP Server or SMSC. It hide
@@ -129,11 +133,23 @@ public class SMPPSession extends AbstractSession implements ClientSession {
    * Default constructor of {@link SMPPSession}. The next action might be
    * connect and bind to a destination message center.
    * 
+   * @param smscConfig
+   * 
    * @see #connectAndBind(String, int, BindType, String, String, String,
    *      TypeOfNumber, NumberingPlanIndicator, String)
    */
-  public SMPPSession() {
-    this(new SynchronizedPDUSender(new DefaultPDUSender(new DefaultComposer())), new DefaultPDUReader(), SocketConnectionFactory.getInstance());
+  public SMPPSession(final BindConfiguration smscConfig) {
+    this(new SynchronizedPDUSender(new DefaultPDUSender(new DefaultComposer())), new DefaultPDUReader(), new ConnectionFactory() {
+
+      @Override
+      public Connection createConnection(String host, int port) throws IOException {
+        if (smscConfig.getLocalHost() != null) {
+          return new SocketConnection(new Socket(host, port, InetAddress.getByName(smscConfig.getLocalHost()), smscConfig.getLocalPort()));
+        } else {
+          return new SocketConnection(new Socket(host, port));
+        }
+      }
+    });
   }
 
   public SMPPSession(PDUSender pduSender, PDUReader pduReader, ConnectionFactory connFactory) {
@@ -149,10 +165,10 @@ public class SMPPSession extends AbstractSession implements ClientSession {
     connectAndBind(host, port, bindParam);
   }
 
-  public SMPPSession(String host, int port, BindParameter bindParam) throws IOException {
-    this();
-    connectAndBind(host, port, bindParam);
-  }
+//  public SMPPSession(String host, int port, BindParameter bindParam) throws IOException {
+//    this();
+//    connectAndBind(host, port, bindParam);
+//  }
 
   /**
    * Open connection and bind immediately.
