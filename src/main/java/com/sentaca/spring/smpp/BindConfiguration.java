@@ -3,6 +3,7 @@
  */
 package com.sentaca.spring.smpp;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.smslib.smpp.Address;
 
 /**
@@ -145,6 +146,11 @@ public class BindConfiguration {
 
   public void setSystemType(String systemType) {
     this.systemType = systemType;
+  }
+  
+  @Override
+  public String toString() {
+    return ReflectionToStringBuilder.toString(this);
   }
 
 }

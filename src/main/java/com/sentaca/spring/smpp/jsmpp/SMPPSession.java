@@ -78,7 +78,6 @@ import org.jsmpp.session.SubmitSmCommandTask;
 import org.jsmpp.session.connection.Connection;
 import org.jsmpp.session.connection.ConnectionFactory;
 import org.jsmpp.session.connection.socket.SocketConnection;
-import org.jsmpp.session.connection.socket.SocketConnectionFactory;
 import org.jsmpp.util.DefaultComposer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,31 +143,37 @@ public class SMPPSession extends AbstractSession implements ClientSession {
       @Override
       public Connection createConnection(String host, int port) throws IOException {
         if (smscConfig.getLocalHost() != null) {
+          logger.debug("Creating socket connection using {}, {}, {} and {}", new Object[] { host, (Integer) port, smscConfig.getLocalHost(),
+              (Integer) smscConfig.getLocalPort() });
           return new SocketConnection(new Socket(host, port, InetAddress.getByName(smscConfig.getLocalHost()), smscConfig.getLocalPort()));
         } else {
+          logger.debug("Creating socket connection using {}, {}", new Object[] { host, (Integer) port });
           return new SocketConnection(new Socket(host, port));
         }
       }
     });
+    logger.debug("SMPPSession created with: {}", smscConfig.toString());
   }
 
-  public SMPPSession(PDUSender pduSender, PDUReader pduReader, ConnectionFactory connFactory) {
+  SMPPSession(PDUSender pduSender, PDUReader pduReader, ConnectionFactory connFactory) {
     super(pduSender);
     this.pduReader = pduReader;
     this.connFactory = connFactory;
     addSessionStateListener(new BoundSessionStateListener());
   }
 
-  public SMPPSession(String host, int port, BindParameter bindParam, PDUSender pduSender, PDUReader pduReader, ConnectionFactory connFactory)
-      throws IOException {
-    this(pduSender, pduReader, connFactory);
-    connectAndBind(host, port, bindParam);
-  }
+  // public SMPPSession(String host, int port, BindParameter bindParam,
+  // PDUSender pduSender, PDUReader pduReader, ConnectionFactory connFactory)
+  // throws IOException {
+  // this(pduSender, pduReader, connFactory);
+  // connectAndBind(host, port, bindParam);
+  // }
 
-//  public SMPPSession(String host, int port, BindParameter bindParam) throws IOException {
-//    this();
-//    connectAndBind(host, port, bindParam);
-//  }
+  // public SMPPSession(String host, int port, BindParameter bindParam) throws
+  // IOException {
+  // this();
+  // connectAndBind(host, port, bindParam);
+  // }
 
   /**
    * Open connection and bind immediately.
