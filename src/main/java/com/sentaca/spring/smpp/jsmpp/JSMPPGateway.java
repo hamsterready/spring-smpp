@@ -275,8 +275,7 @@ public class JSMPPGateway extends AbstractSMPPGateway {
     registeredDelivery.setSMSCDeliveryReceipt((msg.getStatusReport()) ? SMSCDeliveryReceipt.SUCCESS_FAILURE : SMSCDeliveryReceipt.DEFAULT);
 
     boolean returnValue = true;
-    // TODO support for UDHI messages
-    if (useUdhi) {
+    if (useUdhi && binaryContent.length > 140) {      
       int dataLength = 134; // 140 - 6 (messahe length - udh length)
       int parts = (int) Math.ceil(binaryContent.length / (double) dataLength);
       byte referenceNumber = (byte) (Math.random() * 0xFF);
@@ -290,7 +289,7 @@ public class JSMPPGateway extends AbstractSMPPGateway {
         binaryContentPart = ArrayUtils.add(binaryContentPart, 5, (byte) (i + 1));
         returnValue = submitShortMessage(msg, dataCoding, registeredDelivery, binaryContentPart, new ESMClass(SMPPConstant.ESMCLS_UDHI_INDICATOR_SET));
       }
-    } else {
+    } else {      
       returnValue = submitShortMessage(msg, dataCoding, registeredDelivery, binaryContent, new ESMClass());
     }
 
