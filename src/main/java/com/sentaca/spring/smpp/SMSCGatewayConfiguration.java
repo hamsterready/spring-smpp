@@ -15,10 +15,9 @@ import com.sentaca.spring.smpp.mo.MessageReceiver;
 public class SMSCGatewayConfiguration {
 
   private final BindConfiguration smscConfig;
-
   private final MessageReceiver messageReceiver;
-
   private boolean useUdhiInSubmitSm = false;
+  private int enquireLinkSeconds = 5;
 
   public SMSCGatewayConfiguration(BindConfiguration smscConfig, MessageReceiver messageReceiver) {
     this.smscConfig = smscConfig;
@@ -39,5 +38,13 @@ public class SMSCGatewayConfiguration {
 
   public void setUseUdhiInSubmitSm(boolean useUdhiInSubmitSm) {
     this.useUdhiInSubmitSm = useUdhiInSubmitSm;
+  }
+
+  public int getEnquireLinkSeconds() {
+    return enquireLinkSeconds;
+  }
+
+  public void setEnquireLinkSeconds(int enquireLinkSeconds) {
+    this.enquireLinkSeconds = enquireLinkSeconds;
   }
 }

@@ -342,6 +342,8 @@ public class JSMPPGateway extends AbstractSMPPGateway {
 
   @Override
   public void setEnquireLink(int enquireLink) {
+    logger.info("enquireLink: " + enquireLink + "ms");
+    
     super.setEnquireLink(enquireLink);
     if (session != null) {
       session.setEnquireLinkTimer(enquireLink);
