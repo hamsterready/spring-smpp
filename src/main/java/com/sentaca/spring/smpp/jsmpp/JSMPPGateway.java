@@ -23,6 +23,7 @@ package com.sentaca.spring.smpp.jsmpp;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -54,6 +55,7 @@ import org.smslib.TimeoutException;
 import org.smslib.helper.Logger;
 import org.smslib.smpp.AbstractSMPPGateway;
 import org.smslib.smpp.BindAttributes;
+import org.springframework.util.Assert;
 
 import com.sentaca.spring.smpp.BindConfiguration;
 import com.sentaca.spring.smpp.mo.MessageReceiver;
@@ -116,6 +118,7 @@ public class JSMPPGateway extends AbstractSMPPGateway {
   private final BindConfiguration smscConfig;
   private SMPPMonitoringAgent smppMonitoringAgent;
   private boolean useUdhi;
+  private final Set<Integer> smscErrorsToHandle;
 
   /**
    * 
@@ -124,13 +127,18 @@ public class JSMPPGateway extends AbstractSMPPGateway {
    * @param smppMonitoringAgent
    * @param useUdhi 
    */
-  public JSMPPGateway(BindConfiguration smscConfig, MessageReceiver messageReceiver, SMPPMonitoringAgent smppMonitoringAgent, boolean useUdhi) {
+  public JSMPPGateway(BindConfiguration smscConfig, MessageReceiver messageReceiver, SMPPMonitoringAgent smppMonitoringAgent, boolean useUdhi, Set<Integer> smscErrorsToHandle) {
     super(smscConfig.getHost() + ":" + smscConfig.getPort() + ":" + smscConfig.getSystemId(), smscConfig.getHost(), smscConfig.getPort(), new BindAttributes(
         smscConfig.getSystemId(), smscConfig.getPassword(), smscConfig.getSystemType(), org.smslib.smpp.BindAttributes.BindType.TRANSCEIVER));
+    Assert.notNull(smscErrorsToHandle, "Set of error codes cannot be null.");
+    
+    logger.info("Errors to ignore: " + smscErrorsToHandle);
+    
     this.smscConfig = smscConfig;
     this.messageReceiver = messageReceiver;
     this.smppMonitoringAgent = smppMonitoringAgent;
     this.useUdhi = useUdhi;
+    this.smscErrorsToHandle = smscErrorsToHandle;
     messageReceiver.init(this);
     setAttributes(AGateway.GatewayAttributes.SEND | AGateway.GatewayAttributes.CUSTOMFROM | AGateway.GatewayAttributes.BIGMESSAGES
         | AGateway.GatewayAttributes.FLASHSMS | AGateway.GatewayAttributes.RECEIVE);
@@ -335,7 +343,16 @@ public class JSMPPGateway extends AbstractSMPPGateway {
       throw new IOException("InvalidResponseException: ", e);
     } catch (NegativeResponseException e) {
       logger.error(getGatewayId() + ": Message could not be sent: " + e.getMessage(), e);
-      throw new IOException("NegativeResponseException: ", e);
+      
+      if (smscErrorsToHandle.contains(e.getCommandStatus())) {
+        msg.setGatewayId(getGatewayId());
+        msg.setMessageStatus(MessageStatuses.FAILED);
+        msg.setFailureCause(FailureCauses.BAD_NUMBER);
+        
+        return false;
+      } else {
+        throw new IOException("NegativeResponseException: ", e);
+      }
     }
     return true;
   }

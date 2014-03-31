@@ -18,6 +18,7 @@ public class SMSCGatewayConfiguration {
   private final MessageReceiver messageReceiver;
   private boolean useUdhiInSubmitSm = false;
   private int enquireLinkSeconds = 5;
+  private SMSCErrorsToHandle errorsToHandle;
 
   public SMSCGatewayConfiguration(BindConfiguration smscConfig, MessageReceiver messageReceiver) {
     this.smscConfig = smscConfig;
@@ -47,4 +48,13 @@ public class SMSCGatewayConfiguration {
   public void setEnquireLinkSeconds(int enquireLinkSeconds) {
     this.enquireLinkSeconds = enquireLinkSeconds;
   }
+
+  public SMSCErrorsToHandle getErrorsToHandle() {
+    return errorsToHandle;
+  }
+
+  public void setErrorsToHandle(SMSCErrorsToHandle errorsToHandle) {
+    this.errorsToHandle = errorsToHandle;
+  }
+
 }

@@ -47,10 +47,17 @@ public class SMPPService implements InitializingBean, DisposableBean {
       Assert.notEmpty(gatewaysConfigurations, "Gateways must not be empty.");
       Assert.notNull(smppMonitoringAgent, "smppMonitoringAgent must not be null, use default LoggingSMPPMonitoringAgent or NoopSMPPMonitoringAgent.");
       Assert.notNull(outboundMessageCreator, "outboundMessageCreator must not be null, use DefaultOutboundMessageCreator or your own implementatin.");
+      
+      
 
       // add gateways
       for (SMSCGatewayConfiguration configuration : gatewaysConfigurations) {
-        final JSMPPGateway gateway = new JSMPPGateway(configuration.getSmscConfig(), configuration.getMessageReceiver(), smppMonitoringAgent, configuration.isUseUdhiInSubmitSm());
+        final Set<Integer> errorsToHandle = new HashSet<Integer>();
+        if (configuration.getErrorsToHandle() != null) {
+          errorsToHandle.addAll(configuration.getErrorsToHandle().getSet());
+        }
+        
+        final JSMPPGateway gateway = new JSMPPGateway(configuration.getSmscConfig(), configuration.getMessageReceiver(), smppMonitoringAgent, configuration.isUseUdhiInSubmitSm(), errorsToHandle);
         gateway.setEnquireLink(configuration.getEnquireLinkSeconds() * 1000);
         
         Service.getInstance().addGateway(gateway);

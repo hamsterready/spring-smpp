@@ -1,13 +1,15 @@
 package com.sentaca.spring.smpp;
 
-import junit.framework.TestCase;
-
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.sentaca.spring.smpp.mt.MTMessage;
 
-public class IntegrationTest extends TestCase {
+public class IntegrationTest {
 
+  @Test
+  @Ignore
   public void xtestMinimal() throws Exception {
     ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("minimal.xml");
     SMPPService service = context.getBean(SMPPService.class);
@@ -17,7 +19,9 @@ public class IntegrationTest extends TestCase {
     Thread.sleep(6000);
     context.close();
   }
-
+  
+  @Test
+  @Ignore
   public void xtestMerging() throws Exception {
     ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("merging.xml");
     SMPPService service = context.getBean(SMPPService.class);
